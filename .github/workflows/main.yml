@@ -1,16 +1,27 @@
-name: Deploy to InfinityFree via FTP
+name: Deploy Laravel to InfinityFree
 
 on:
   push:
     branches:
-      - main  # Set this to master if your default branch is named master
+      - main  # Adjust if your main branch is named master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: 🚚 Checkout Code
         uses: actions/checkout@v4
+
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      # - name: 📦 Install Composer Dependencies
+      #   run: |
+      #     composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
       - name: 📂 Upload Files to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
@@ -18,4 +29,4 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: htdocs/   # Destination folder on InfinityFree
+          server-dir: panha-dev.wuaze.com/htdocs/
