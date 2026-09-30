@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/users', [AuthController::class, 'user']);
 
 // Protected Routes (Requires Bearer Token)
 Route::middleware('auth:sanctum')->group(function () {
