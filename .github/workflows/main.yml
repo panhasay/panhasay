@@ -10,23 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚚 Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v6
 
-      - name: ⚙️ Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           coverage: none
+          extensions: mbstring, xml, bcmath, curl, zip, pdo, pdo_mysql
 
-      # - name: 📦 Install Composer Dependencies
+      # - name: Install Composer Dependencies
       #   run: |
       #     composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: 📂 Upload Files to FTP
+      - name: Upload Files to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: htdocs/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
+            **/.env
+            **/.env.*
+            **/storage/logs/*
+
+      - name: Run Pending Migrations on Server
+        run: |
+          curl -fsS -L -X POST "${{ secrets.APP_URL }}/run-migrations" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOY_MIGRATE_TOKEN }}" \
+            -H "Accept: application/json"
